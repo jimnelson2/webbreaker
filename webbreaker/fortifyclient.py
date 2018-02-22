@@ -28,6 +28,14 @@ class FortifyClient(object):
         self.extension = extension
         self.runenv = WebBreakerHelper.check_run_env()
         self.token = token
+        
+        # Add limited debugging 
+        Logger.app.debug("ssc_server: {}".format(self.ssc_server))
+        Logger.app.debug("business_risk_ranking: {}".format(self.business_risk_ranking))
+        Logger.app.debug("development_phase: {}".format(self.development_phase))
+        Logger.app.debug("development_strategy: {}".format(self.development_strategy))
+        Logger.app.debug("accessibility: {}".format(self.accessibility))
+        Logger.app.debug("custom_attribute: {}".format(self.custom_attribute))
         if not token:
             self.token = self.get_token()
 
@@ -125,16 +133,22 @@ class FortifyClient(object):
             For example default SSC installations require attributeDefinitionId 1, 5, 6, and 7, however other deployments may have a single
             custom_attribute as is implemented below.  See also 
             https://github.com/target/fortifyapi/blob/134477ef708e63d8c7b555741f5c69610abad920/fortifyapi/fortify.py#L105
+            search_expression='name:"CI Number"'
             """
             response = api.add_project_version_attribute(project_version_id=project_version_id,
                                                          attribute_definition_id=self.__get_attribute_definition_id__(
-                                                             search_expression='name:"CI Number"'),
+                                                             search_expression=custom_attribute),
                                                          value='New WebBreaker Application',
                                                          values=[])
+            # Debug for above response
+            Logger.app.debug("response before --->> {}".format(response))
+            
             if not response.success:
                 raise ValueError("Failed to create required project version attribute")
 
             response = api.commit_project_version(project_version_id=project_version_id)
+            Logger.app.debug("response after --->> {}".format(response))
+            
             if not response.success:
                 raise ValueError("Failed to commit new project version")
                 # Logger.app.debug("Created new project version id {0}".format(project_version_id))
