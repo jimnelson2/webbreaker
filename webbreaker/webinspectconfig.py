@@ -52,6 +52,7 @@ class WebInspectConfig(object):
         try:
             webinspect_dict = self.__get_webinspect_settings__()
             self.endpoints = webinspect_dict['endpoints']
+
             self.sizing = webinspect_dict['size_list']
             self.default_size = webinspect_dict['default_size']
             self.webinspect_git = webinspect_dict['git']
