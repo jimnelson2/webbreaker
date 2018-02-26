@@ -24,6 +24,8 @@ class WebinspectProxyClient(object):
         else:
             self.port = ""
 
+        Logger.app.info("Webinspect proxy created: -->{}<--".format(self.host))
+
     def get_cert_proxy(self):
         path = Config().cert
 
