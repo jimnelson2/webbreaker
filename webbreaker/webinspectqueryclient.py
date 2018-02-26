@@ -10,8 +10,8 @@ from exitstatus import ExitStatus
 
 
 class WebinspectQueryClient(object):
-    def __init__(self, host, protocol, username=None, password=None):
-        self.host = protocol + '://' + host
+    def __init__(self, host, username=None, password=None):
+        self.host = host
         self.username = username
         self.password = password
         Logger.app.info("Using webinspect server: -->{}<-- for query".format(self.host))

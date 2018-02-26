@@ -281,11 +281,6 @@ def scan(config, **kwargs):
 @webinspect.command(name='list',
                     short_help="List WebInspect scans",
                     help=WebBreakerHelper().webinspect_list_desc())
-@click.option('--protocol',
-              required=False,
-              type=click.Choice(['http', 'https']),
-              default='https',
-              help="Protocol used to contact WebInspect server")
 @click.option('--scan_name',
               required=False,
               help="Specify WebInspect scan name")
@@ -300,13 +295,13 @@ def scan(config, **kwargs):
               required=False,
               help="Specify WebInspect password")
 @pass_config
-def webinspect_list(config, server, scan_name, protocol, username, password):
+def webinspect_list(config, server, scan_name, username, password):
     if len(server):
         servers = []
         for s in server:
-            servers.append(format_webinspect_server(s))
+            servers.append(s)
     else:
-        servers = [format_webinspect_server(e[0]) for e in WebInspectConfig().endpoints]
+        servers = [(e[0]) for e in WebInspectConfig().endpoints]
 
     auth_config = WebInspectAuthConfig()
     if auth_config.authenticate:
@@ -321,7 +316,7 @@ def webinspect_list(config, server, scan_name, protocol, username, password):
         username = None
         password = None
     for server in servers:
-        query_client = WebinspectQueryClient(host=server, protocol=protocol, username=username,
+        query_client = WebinspectQueryClient(host=server, username=username,
                                              password=password)
         if scan_name:
             results = query_client.get_scan_by_name(scan_name)
@@ -541,6 +536,7 @@ def webinspect_proxy(download, list, port, proxy_name, setting, server, start, s
 
         elif stop:
             for server in servers:
+
                 proxy_client = WebinspectProxyClient(proxy_name, port, server, username=username, password=password)
                 result = proxy_client.get_proxy()
                 if result:
@@ -554,6 +550,7 @@ def webinspect_proxy(download, list, port, proxy_name, setting, server, start, s
 
         elif download:
             for server in servers:
+                server = 'https://' + server
                 proxy_client = WebinspectProxyClient(proxy_name, port, server, username=username, password=password)
                 result = proxy_client.get_proxy()
                 if result:
@@ -565,6 +562,7 @@ def webinspect_proxy(download, list, port, proxy_name, setting, server, start, s
 
         elif upload:
             for server in servers:
+                server = 'https://' + server
                 proxy_client = WebinspectProxyClient(proxy_name, port, server, username=username, password=password)
                 result = proxy_client.get_proxy()
                 if result:
