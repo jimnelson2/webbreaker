@@ -231,34 +231,6 @@ def test_webinspect_list_scan_name_error(test_mock, runner, caplog):
     assert result.exit_code == -1
 
 
-@mock.patch('webbreaker.__main__.WebinspectQueryClient')
-def test_webinspect_list_protocol_wrong_type(test_mock, runner, caplog):
-    test_mock.return_value.list_scans.return_value = None
-
-    result = runner.invoke(webbreaker,
-                           ['webinspect', 'list', '--server', 'test-server', '--protocol', 'failure'])
-
-    # Checks for no logs, click doesn't log, just print to stdout
-    caplog.check()
-    caplog.uninstall()
-
-    assert result.exit_code == 2
-
-
-@mock.patch('webbreaker.__main__.WebinspectQueryClient')
-def test_webinspect_list_protocol_change_success(test_mock, runner, caplog):
-    test_mock.return_value.list_scans.return_value = None
-
-    result = runner.invoke(webbreaker,
-                           ['webinspect', 'list', '--server', 'http://test-server', '--protocol', 'https'])
-
-    # WebInspectQueryClient handles all logging
-    caplog.check()
-    caplog.uninstall()
-
-    assert result.exit_code == 0
-
-
 # TODO: webbreaker webinespect download
 
 # TODO: webinspect scan [OPTIONS]
