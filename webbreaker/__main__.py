@@ -70,12 +70,6 @@ def webinspect_prompt():
     return webinspect_user, webinspect_password
 
 
-def format_webinspect_server(server):
-    #server = server.replace('https://', '')
-    #server = server.replace('http://', '')
-    return server
-
-
 @click.group(help=WebBreakerHelper().webbreaker_desc())
 @pass_config
 def cli(config):
@@ -473,13 +467,8 @@ def download(config, server, scan_name, scan_id, x, username, password):
 def webinspect_proxy(download, list, port, proxy_name, setting, server, start, stop, upload, webmacro, username, password):
     try:
         if server:
-            # TODO (remove after CR) Removed servers.append(format_webinspect_server(server)) to allow for either
-            # TODO (remove after CR)    http or https connection. Could leave in but then try to use https first
-            # TODO (remove after CR)    and fail over to http on connection error. Not a fan but it's an option.
             servers = [server]
         else:
-            # TODO (remove after CR) Removed format_webinspect_server because this pulls from config which shouldn't be
-            # TODO (remove after CR)    modified
             servers = [(e[0]) for e in WebInspectConfig().endpoints]
 
         auth_config = WebInspectAuthConfig()
