@@ -351,7 +351,7 @@ def webinspect_list(config, server, scan_name, username, password):
                     help=WebBreakerHelper().webinspect_servers_desc())
 @pass_config
 def servers_list(config):
-    servers = [(e[0]) for e in WebInspectConfig().endpoints]
+    servers = [format_webinspect_server(e[0]) for e in WebInspectConfig().endpoints]
     print('\n\nFound WebInspect Servers')
     print('-' * 30)
     for server in servers:
@@ -375,6 +375,11 @@ def servers_list(config):
               required=False,
               default="fpr",
               help="Assign scan extension")
+@click.option('--protocol',
+              required=False,
+              type=click.Choice(['http', 'https']),
+              default='https',
+              help="Protocol used to contact WebInspect server")
 @click.option('--username',
               required=False,
               help="Specify WebInspect username")
@@ -382,7 +387,8 @@ def servers_list(config):
               required=False,
               help="Specify WebInspect password")
 @pass_config
-def download(config, server, scan_name, scan_id, x, username, password):
+def download(config, server, scan_name, scan_id, x, protocol, username, password):
+    server = format_webinspect_server(server)
 
     auth_config = WebInspectAuthConfig()
     if auth_config.authenticate:
@@ -397,7 +403,7 @@ def download(config, server, scan_name, scan_id, x, username, password):
         username = None
         password = None
 
-    query_client = WebinspectQueryClient(host=server, username=username, password=password)
+    query_client = WebinspectQueryClient(host=server, protocol=protocol, username=username, password=password)
 
     if not scan_id:
         results = query_client.get_scan_by_name(scan_name)
