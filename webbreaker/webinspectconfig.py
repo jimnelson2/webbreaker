@@ -343,33 +343,30 @@ class WebInspectAuthConfig(object):
         config_file = Config().config
         try:
             config.read(config_file)
-            self.authenticate = config.get("webinspect", "authenticate")
-            if self.authenticate.lower() == 'true':
-                self.authenticate = True
-            else:
-                self.authenticate = False
-
-            secret_client = SecretClient()
-            self.username = secret_client.get('webinspect', 'username')
-            self.password = secret_client.get('webinspect', 'password')
+            self.require_authenticate = self._check_if_authenticate_required_()
+            if self.require_authenticate:
+                secret_client = SecretClient()
+                self.username = secret_client.get('webinspect', 'username')
+                self.password = secret_client.get('webinspect', 'password')
 
         except (configparser.NoOptionError, CalledProcessError) as noe:
             Logger.app.error("{} has incorrect or missing values {}".format(config_file, noe))
         except configparser.Error as e:
             Logger.app.error("Error reading {} {}".format(config_file, e))
 
+    def _check_if_authenticate_required_(self):
+        return config.get("webinspect", "authenticate").lower() == 'true'
+
+    def _get_config_authentication_(self, config):
+        pass
+
     def clear_credentials(self):
         secret_client = SecretClient()
         secret_client.clear_credentials('webinspect', 'username', 'password')
 
-    def write_username(self, username):
-        self.username = username
+    def write_credentials(self, username, password):
         secret_client = SecretClient()
         secret_client.set('webinspect', 'username', username)
-
-    def write_password(self, password):
-        self.password = password
-        secret_client = SecretClient()
         secret_client.set('webinspect', 'password', password)
 
     def has_auth_creds(self):
@@ -377,3 +374,18 @@ class WebInspectAuthConfig(object):
             return True
         else:
             return False
+
+    def authenticate(self, username, password):
+        if self.require_authenticate:
+            if username is not None and password is not None:
+                pass
+            elif self.username and self.password:
+                username = self.username
+                password = self.password
+            else:
+                username, password = webinspect_prompt()
+        else:
+            username = None
+            password = None
+
+        return username, password

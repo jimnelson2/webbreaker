@@ -77,6 +77,7 @@ def test_webinspect_download_req_no_scans_found(test_mock, runner, caplog):
     assert result.exit_code == 0
 
 
+
 @mock.patch('webbreaker.__main__.WebinspectQueryClient')
 def test_webinspect_download_req_one_scan_found(test_mock, runner, caplog):
     test_mock.return_value.get_scan_by_name.return_value = [{'Name': 'test-name', 'ID': 1234, 'Status': 'test'}]

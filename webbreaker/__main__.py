@@ -167,6 +167,8 @@ def scan(config, **kwargs):
         username = ops['username']
         password = ops['password']
 
+        WebInspectAuthConfig()
+
         auth_config = WebInspectAuthConfig()
         if auth_config.authenticate:
             if username is not None and password is not None:
@@ -379,7 +381,9 @@ def servers_list(config):
 def download(config, server, scan_name, scan_id, x, username, password):
 
     auth_config = WebInspectAuthConfig()
-    if auth_config.authenticate:
+    auth_config.authenticate(username, password)
+
+    if auth_config.require_authenticate:
         if username is not None and password is not None:
             pass
         if auth_config.username and auth_config.password:
@@ -416,8 +420,7 @@ def download(config, server, scan_name, scan_id, x, username, password):
 
     # If we've made it this far, our new credentials are valid and should be saved
     if username is not None and password is not None and not auth_config.has_auth_creds():
-        auth_config.write_username(username)
-        auth_config.write_password(password)
+        auth_config.write_credentials(username, password)
 
 @webinspect.command(name='proxy',
                     short_help="Interact with WebInspect proxy",
