@@ -10,17 +10,17 @@ import requests.packages.urllib3
 from . import __version__ as version
 
 
-class ThreadFixAPI(object):
+class ThreadFixProAPI(object):
     """An API wrapper to facilitate interactions to and from ThreadFix."""
 
     def __init__(self, host, api_key, verify_ssl=True, timeout=30, user_agent=None, cert=None, debug=False):
         """
-        Initialize a ThreadFix API instance.
-        :param host: The URL for the ThreadFix server. (e.g., http://localhost:8080/threadfix/)
-        :param api_key: The API key generated on the ThreadFix API Key page.
+        Initialize a ThreadFix Pro API instance.
+        :param host: The URL for the ThreadFix Pro server. (e.g., http://localhost:8080/threadfix/)
+        :param api_key: The API key generated on the ThreadFix Pro API Key page.
         :param verify_ssl: Specify if API requests will verify the host's SSL certificate, defaults to true.
         :param timeout: HTTP timeout in seconds, default is 30.
-        :param user_agent: HTTP user agent string, default is "threadfix_api/[version]".
+        :param user_agent: HTTP user agent string, default is "threadfix_pro_api/[version]".
         :param cert: You can also specify a local cert to use as client side certificate, as a single file (containing
         the private key and the certificate) or as a tuple of both file’s path
         :param debug: Prints requests and responses, useful for debugging.
@@ -32,7 +32,7 @@ class ThreadFixAPI(object):
         self.timeout = timeout
 
         if not user_agent:
-            self.user_agent = 'threadfix_api/' + version
+            self.user_agent = 'threadfix_pro_api/' + version
         else:
             self.user_agent = user_agent
 
@@ -92,7 +92,7 @@ class ThreadFixAPI(object):
             new_data = []
             for app in team_data.data['applications']:
                 new_data.append(app)
-            return ThreadFixResponse(message=team_data.message, success=team_data.success,
+            return ThreadFixProResponse(message=team_data.message, success=team_data.success,
                                      response_code=team_data.response_code, data=new_data)
         else:
             return team_data
@@ -129,8 +129,6 @@ class ThreadFixAPI(object):
                              params={'scanFileName': filename})
 
     # Utility
-
-
     def _request(self, method, url, params=None, files=None):
         """Common handler for all HTTP requests."""
         if not params:
@@ -162,21 +160,21 @@ class ThreadFixAPI(object):
                 response_code = json_response['responseCode']
                 data = json_response['object']
 
-                return ThreadFixResponse(message=message, success=success, response_code=response_code, data=data)
+                return ThreadFixProResponse(message=message, success=success, response_code=response_code, data=data)
             except ValueError:
-                return ThreadFixResponse(message='JSON response could not be decoded.', success=False)
+                return ThreadFixProResponse(message='JSON response could not be decoded.', success=False)
         except requests.exceptions.SSLError:
-            return ThreadFixResponse(message='An SSL error occurred.', success=False)
+            return ThreadFixProResponse(message='An SSL error occurred.', success=False)
         except requests.exceptions.ConnectionError:
-            return ThreadFixResponse(message='A connection error occurred.', success=False)
+            return ThreadFixProResponse(message='A connection error occurred.', success=False)
         except requests.exceptions.Timeout:
-            return ThreadFixResponse(message='The request timed out after ' + str(self.timeout) + ' seconds.',
+            return ThreadFixProResponse(message='The request timed out after ' + str(self.timeout) + ' seconds.',
                                      success=False)
         except requests.exceptions.RequestException:
-            return ThreadFixResponse(message='There was an error while handling the request.', success=False)
+            return ThreadFixProResponse(message='There was an error while handling the request.', success=False)
 
 
-class ThreadFixResponse(object):
+class ThreadFixProResponse(object):
     """Container for all ThreadFix API responses, even errors."""
 
     def __init__(self, message, success, response_code=-1, data=None):
