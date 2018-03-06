@@ -37,12 +37,13 @@ def main():
     def cmdline(command):
         process = Popen(
             args=command,
-            stdout=PIPE,
-            stderr=STDOUT
+            stdout=PIPE
         )
         output = str(process.communicate()[0].decode('utf-8')).rstrip()
         if process.returncode != 0:
-            sys.stderr.write("An error occurred while executing {} command.\n".format(command))
+            sys.stderr.write("An error occurred while executing {0} command.\n"
+                             "\nTry executing {1} --clean -y --onefile {2} {3}".format(command, pyinstaller_exe,
+                                                                                       str(user_site), str(webbreaker_main)))
             raise SystemExit
         return output
 
@@ -69,9 +70,11 @@ def main():
                                 pyinstaller_exe = os.path.abspath(os.path.join('/usr', 'bin', 'pyinstaller'))
 
                             if distro == "darwin":
+                                # cmdline([pyinstaller_exe, "--clean", "-y", "--nowindowed", "--console", "--onefile",
+                                #              "--name", "webbreaker", "--osx-bundle-identifier", "com.target.ps.webbreaker", "-p",
+                                #              str(user_site), str(webbreaker_main)])
                                 cmdline([pyinstaller_exe, "--clean", "-y", "--nowindowed", "--console", "--onefile",
-                                             "--name", "webbreaker", "--osx-bundle-identifier", "com.target.ps.webbreaker", "-p",
-                                             str(user_site), str(webbreaker_main)])
+                                         "--name", "webbreaker", "-p", str(user_site), str(webbreaker_main)])
 
                                 print("Successfully built an osx distro {}!".format(pyinstaller_file))
 
@@ -84,7 +87,8 @@ def main():
                                 print("We cannot build on your OS!")
 
                         except (NameError, AttributeError, OSError) as e:
-                            print("No pyinstaller was found: {0} or an error occured with your pyinstaller -> {1}!!"
+                            print("No pyinstaller was found: {0} or an error occured with your pyinstaller command"
+                                  " -> {1}!!"
                                   .format(e.message, pyinstaller_exe))
 
                     else:
@@ -110,6 +114,9 @@ def main():
 
     except (IOError, NameError, CalledProcessError):
         sys.stderr.write("Your system does not meet the minimum requirements to compile the WebBreaker static binary!\n")
+    except OSError as e:
+        sys.stderr.write("Your pyinstaller does not have the appropriate ownership or permissions of a file or dir: {}"
+                         .format(e.message))
 
 
 if __name__ == "__main__":
