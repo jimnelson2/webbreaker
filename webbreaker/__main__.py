@@ -3,7 +3,7 @@
 
 __author__ = "Brandon Spruth (brandon.spruth2@target.com), Jim Nelson (jim.nelson2@target.com)," \
              "Matt Dunaj (matthew.dunaj@target.com), Kyler Witting (Kyler.Witting@target.com)"
-__copyright__ = "(C) 2017 Target Brands, Inc."
+__copyright__ = "(C) 2018 Target Brands, Inc."
 __contributors__ = ["Brandon Spruth", "Jim Nelson", "Matthew Dunaj", "Kyler Witting"]
 __status__ = "Production"
 __license__ = "MIT"
